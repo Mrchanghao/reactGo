@@ -1,4 +1,5 @@
 import express, { Application } from 'express';
+import hpp from 'hpp';
 import passport from 'passport';
 import session from 'express-session';
 import bodyParser from 'body-parser';
@@ -21,7 +22,8 @@ export default (app: Application) => {
   if (ENV === 'production') {
     app.use(gzip());
     // Secure your Express apps by setting various HTTP headers. Documentation: https://github.com/helmetjs/helmet
-    app.use(helmet());
+    app.use(helmet({ contentSecurityPolicy: false }));
+    app.use(hpp());
     app.use(morgan('combined'));
   } else {
     app.use(morgan('dev'));
@@ -61,7 +63,7 @@ export default (app: Application) => {
   //          cookie: Please note that secure: true is a recommended option.
   //                  However, it requires an https-enabled website, i.e., HTTPS is necessary for secure cookies.
   //                  If secure is set, and you access your site over HTTP, the cookie will not be set.
-  let sessionStore = null;
+  let sessionStore;
   if (!dbSession) {
     console.warn(unsupportedMessage('session'));
   } else {
